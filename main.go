@@ -1,6 +1,8 @@
-package GithubRunnerGo
+package main
 
 import (
+	"GithubRunnerGo/handlers/add"
+	"GithubRunnerGo/handlers/all"
 	"GithubRunnerGo/handlers/start"
 	"GithubRunnerGo/utils"
 	"github.com/PaulSonOfLars/gotgbot"
@@ -14,6 +16,8 @@ import (
 
 func RegisterAllHandlers(updater *gotgbot.Updater, l *zap.SugaredLogger){
 	start.LoadStartHandler(updater, l)
+	add.LoadAddHandler(updater, l)
+	all.LoadALLHandler(updater, l)
 }
 
 func main() {

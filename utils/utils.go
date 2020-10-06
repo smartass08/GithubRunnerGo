@@ -23,6 +23,7 @@ type CommandJson struct {
 	START    string `json:"start"`
 	HELP     string `json:"help"`
 	ADD     string `json:"add"`
+	ALL		string	`json:"all"`
 }
 
 var CommandConfig *CommandJson = InitCommandConfig()
@@ -95,3 +96,6 @@ func GetADDCommand() string {
 	return CommandConfig.ADD
 }
 
+func GetAllCommand() string {
+	return CommandConfig.ALL
+}

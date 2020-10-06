@@ -19,7 +19,7 @@ func StartRunner(closeCh chan bool, repo string, token string) {
 	db.Insert(repo, token, true)
 	channels[repo] = closeCh
 	_ = os.Chdir("actions-runner")
-	exec.Command("./config.sh", "--url", fmt.Sprintf("%v", repo), "--token", fmt.Sprintf("%v", token))
+	go exec.Command("./config.sh", "--url", fmt.Sprintf("%v", repo), "--token", fmt.Sprintf("%v", token))
 	for {
 		stop := <-closeCh
 		if stop{

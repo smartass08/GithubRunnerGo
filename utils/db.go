@@ -30,8 +30,8 @@ func genjson(token string, repo string, running bool) bson.M {
 	return bson.M{"repo": repo,"token": token, "running": running}
 }
 
-func (C *DB) Access(url string) {
-	log.Println("Starting DB process")
+func (D *DB) Access(url string) {
+	fmt.Println("HERE")
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
@@ -43,14 +43,14 @@ func (C *DB) Access(url string) {
 		log.Println("Error while connecting DB", err)
 		return
 	}
-	C.client = client
+	D.client = client
 
 }
 
-func (C *DB) GetAllConfigs() {
+func (D *DB) GetAllConfigs() {
 	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
 	defer cancel()
-	collection := C.client.Database(GetDbName()).Collection(GetDbCollection())
+	collection := D.client.Database(GetDbName()).Collection(GetDbCollection())
 	all, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		fmt.Println(err)
@@ -63,19 +63,19 @@ func (C *DB) GetAllConfigs() {
 		if err != nil {
 			log.Println(err)
 		} else {
-			if result["repo"] != nil && result["running"] != nil && result["token"] != nil{
+			if result["repo"] != nil{
 				_ = bson.Unmarshal(all.Current, a)
 				ALL = append(ALL, a)
 			}
 		}
 	}
-
+	CheckAll()
 }
 
-func (C *DB) Insert(repo string, token string, running bool) {
+func (D *DB) Insert(repo string, token string, running bool) {
 	wg.Add(1)
 	go func() {
-		collection := C.client.Database(GetDbName()).Collection(GetDbCollection())
+		collection := D.client.Database(GetDbName()).Collection(GetDbCollection())
 		_, err := collection.InsertOne(context.Background(), genjson(token, repo, running))
 		if err != nil {
 			log.Printf("Error inserting the id into db %s", err)
@@ -102,7 +102,7 @@ func getIdIndex(repo string) (int, bool) {
 	return 0, false
 }
 
-func (C *DB) Delete(repo string, token string, running bool) {
+func (D *DB) Delete(repo string, token string, running bool) {
 	defer wg.Done()
 	index, found := getIdIndex(repo)
 	if found {
@@ -114,7 +114,7 @@ func (C *DB) Delete(repo string, token string, running bool) {
 	}
 	wg.Add(1)
 	go func() {
-		collection := C.client.Database(GetDbName()).Collection(GetDbCollection())
+		collection := D.client.Database(GetDbName()).Collection(GetDbCollection())
 		_, err := collection.DeleteOne(context.Background(), genjson(token, repo, running))
 		if err != nil {
 			log.Println(err)
@@ -130,4 +130,8 @@ func GetValues(repo string)*info{
 		}
 	}
 	return &info{}
+}
+
+func GetAllInfo()[]info{
+	return ALL
 }

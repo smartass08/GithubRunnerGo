@@ -21,12 +21,15 @@ func ADDHandler(b ext.Bot, u *gotgbot.Update) error {
 		_, _ = b.ReplyMarkdownV2(u.EffectiveChat.Id, "You already hab runner for this repo running, Please remove that first", u.EffectiveMessage.MessageId)
 		return nil
 	}
-
+	ch := make(chan bool)
+	ch <- false
+	utils.StartRunner(ch, repo,token)
+	_, _ = b.ReplyMarkdownV2(u.EffectiveChat.Id, "Added runner successfully", u.EffectiveMessage.MessageId)
 	return nil
 }
 
 
 func LoadAddHandler(updater *gotgbot.Updater, l *zap.SugaredLogger) {
-	defer l.Info("Start Module Loaded.")
+	defer l.Info("Add Module Loaded.")
 	updater.Dispatcher.AddHandler(handlers.NewCommand(utils.GetADDCommand(), ADDHandler))
 }
