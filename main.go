@@ -49,6 +49,9 @@ func main() {
 	RegisterAllHandlers(updater, l)
 	_ = updater.StartPolling()
 	l.Info("Started Updater.")
+	db := utils.DB{}
+	db.Access(utils.GetDbUrl())
+	db.GetAllConfigs()
 	updater.Idle()
 }
 

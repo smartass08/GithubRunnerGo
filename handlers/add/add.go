@@ -16,6 +16,13 @@ func ADDHandler(b ext.Bot, u *gotgbot.Update) error {
 	}
 	repo := strings.Split(strings.Split(u.EffectiveMessage.Text, utils.GetADDCommand())[1], " ")[0]
 	token := strings.Split(strings.Split(u.EffectiveMessage.Text, utils.GetADDCommand())[1], " ")[1]
+	if len(token) < 1{
+		token = utils.GetGhToken()
+		if  len(token) < 1{
+			_, _ = b.ReplyMarkdownV2(u.EffectiveChat.Id, "You need to provide github token", u.EffectiveMessage.MessageId)
+			return nil
+		}
+	}
 	_, _ = b.DeleteMessage(u.EffectiveChat.Id, u.EffectiveMessage.MessageId)
 	if !utils.CheckValid(repo){
 		_, _ = b.ReplyMarkdownV2(u.EffectiveChat.Id, "You already hab runner for this repo running, Please remove that first", u.EffectiveMessage.MessageId)
